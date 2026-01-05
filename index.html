@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyCast | Responsive Weather System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent: #00d2ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent); cursor: pointer; }
+
+        /* Desktop Nav */
+        nav ul { display: flex; list-style: none; gap: 20px; align-items: center; }
+        nav a { text-decoration: none; color: #ddd; font-size: 0.9rem; transition: 0.3s; }
+        nav a:hover { color: var(--accent); }
+
+        .login-btn {
+            background: var(--accent); color: #000; padding: 8px 20px;
+            border-radius: 20px; font-weight: 600;
+        }
+
+        /* --- SEARCH BAR --- */
+        .search-container {
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-box {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 5px 20px;
+            display: flex;
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-box input {
+            background: none; border: none; color: white;
+            padding: 10px; width: 100%; outline: none; font-size: 1rem;
+        }
+
+        .search-box button {
+            background: none; border: none; color: var(--accent);
+            cursor: pointer; padding: 10px; font-size: 1.2rem;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            padding: 0 5% 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .weather-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Hero Card */
+        .current-weather {
+            background: var(--glass);
+            padding: 3rem 2rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .city-title { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .temp-display { font-size: 5rem; font-weight: 800; margin: 1rem 0; }
+        .condition { font-size: 1.2rem; opacity: 0.8; text-transform: capitalize; }
+
+        /* Forecast Card */
+        .forecast-card {
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .forecast-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 1.5rem;
+        }
+
+        .forecast-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 3rem 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .social-icons { display: flex; gap: 15px; margin-top: 1rem; }
+        .social-icons a {
+            width: 40px; height: 40px; background: var(--glass);
+            border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; color: white; text-decoration: none; transition: 0.3s;
+        }
+        .social-icons a:hover { background: var(--accent); color: #000; transform: translateY(-5px); }
+
+        .map-wrapper {
+            height: 180px; border-radius: 20px; overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 850px) {
+            .weather-hero { grid-template-columns: 1fr; }
+            header nav { display: none; } /* Hide desktop menu */
+        }
+
+        @media (max-width: 480px) {
+            .temp-display { font-size: 3.5rem; }
+            .city-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="location.reload()"><i class="fas fa-wind"></i> SkyCast</div>
+        <nav>
+            <ul>
+                <li><a href="about.html">About</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="login.html" class="login-btn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Enter city name...">
+            <button onclick="searchCity()"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+
+    <main>
+        <div class="weather-hero">
+            <div class="current-weather">
+                <h1 id="cityName" class="city-title">Detecting...</h1>
+                <div id="weatherIcon" style="font-size: 4rem; color: var(--accent);">
+                    <i class="fas fa-cloud-sun"></i>
+                </div>
+                <div class="temp-display"><span id="currTemp">--</span>°</div>
+                <p id="currDesc" class="condition">Please allow location access</p>
+                <div style="margin-top: 2rem; display: flex; justify-content: space-around; opacity: 0.8;">
+                    <span><i class="fas fa-droplet"></i> Hum: <span id="hum">--</span>%</span>
+                    <span><i class="fas fa-wind"></i> Wind: <span id="wind">--</span>km/h</span>
+                </div>
+            </div>
+
+            <div class="forecast-card">
+                <h3>5-Day Forecast</h3>
+                <div id="forecastList" class="forecast-grid">
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div>
+            <h3>Connect With Us</h3>
+            <p>Get daily weather updates on your feed.</p>
+            <div class="social-icons">
+                <a href="facebook.html"><i class="fab fa-facebook-f"></i></a>
+                <a href="instagram.html"><i class="fab fa-instagram"></i></a>
+                <a href="gmail.html"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+        <div>
+            <h3>Local Map View</h3>
+            <div class="map-wrapper">
+                <iframe id="mapFrame" width="100%" height="100%" frameborder="0" src=""></iframe>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const weatherMap = {
+            0: "Clear Sky", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast",
+            45: "Foggy", 61: "Rainy", 71: "Snowy", 95: "Thunderstorm"
+        };
+
+        async function fetchWeather(lat, lon, name) {
+            document.getElementById('cityName').innerText = name;
+            document.getElementById('mapFrame').src = `https://maps.google.com/maps?q=${lat},${lon}&z=12&output=embed`;
+
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,weathercode&timezone=auto`);
+                const data = await res.json();
+
+                // Current Weather
+                document.getElementById('currTemp').innerText = Math.round(data.current_weather.temperature);
+                document.getElementById('currDesc').innerText = weatherMap[data.current_weather.weathercode] || "Cloudy";
+                document.getElementById('wind').innerText = data.current_weather.windspeed;
+                document.getElementById('hum').innerText = "65"; // Standard approximation
+
+                // 5-Day Forecast
+                const forecastList = document.getElementById('forecastList');
+                forecastList.innerHTML = "";
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                
+                for(let i=1; i<=5; i++) {
+                    const date = new Date(data.daily.time[i]);
+                    forecastList.innerHTML += `
+                        <div class="forecast-row">
+                            <span>${days[date.getDay()]}</span>
+                            <i class="fas fa-cloud-sun" style="color:var(--accent)"></i>
+                            <span>${Math.round(data.daily.temperature_2m_max[i])}°C</span>
+                        </div>
+                    `;
+                }
+            } catch (e) { console.error("Error loading weather"); }
+        }
+
+        async function searchCity() {
+            const city = document.getElementById('cityInput').value;
+            if(!city) return;
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}`);
+            const data = await res.json();
+            if(data.length > 0) fetchWeather(data[0].lat, data[0].lon, data[0].display_name.split(',')[0]);
+        }
+
+        window.onload = () => {
+            navigator.geolocation.getCurrentPosition(
+                p => fetchWeather(p.coords.latitude, p.coords.longitude, "Your Location"),
+                () => fetchWeather(40.71, -74.00, "New York")
+            );
+        };
+    </script>
+</body>
+</html>

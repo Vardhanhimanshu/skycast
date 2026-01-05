@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f6f8fc;
+            --primary-blue: #1a73e8;
+            --text-color: #202124;
+            --sidebar-width: 256px;
+            --header-height: 64px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', Arial, sans-serif; }
+        body { background-color: #fff; height: 100vh; overflow: hidden; }
+
+        /* ===========================
+           SECTION 1: SIGN IN STYLES
+           =========================== */
+        #signin-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .login-card {
+            background: white;
+            padding: 48px 40px 36px;
+            border-radius: 8px;
+            width: 450px;
+            border: 1px solid #dadce0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .google-logo { width: 75px; margin-bottom: 10px; }
+
+        .login-header { text-align: center; margin-bottom: 40px; }
+        .login-header h2 { font-weight: 400; font-size: 24px; color: var(--text-color); margin-bottom: 10px; }
+        .login-header p { font-size: 16px; color: var(--text-color); }
+
+        .input-wrapper { width: 100%; margin-bottom: 10px; }
+        .login-input {
+            width: 100%;
+            padding: 13px 15px;
+            font-size: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .login-input:focus { border: 2px solid var(--primary-blue); padding: 12px 14px; }
+
+        .forgot-link {
+            align-self: flex-start;
+            color: var(--primary-blue);
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        .action-buttons {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .create-account { color: var(--primary-blue); font-weight: 500; font-size: 14px; cursor: pointer; }
+        
+        .btn-next {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-next:hover { background-color: #1557b0; box-shadow: 0 1px 2px rgba(60,64,67,0.3); }
+
+        /* ===========================
+           SECTION 2: GMAIL INTERFACE STYLES
+           =========================== */
+        #gmail-interface {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            height: 100vh;
+            background-color: var(--bg-color);
+        }
+
+        /* Header */
+        header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background-color: #f6f8fc;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 10px; min-width: 230px; padding-left: 10px; }
+        .menu-icon { padding: 12px; border-radius: 50%; cursor: pointer; color: #5f6368; }
+        .menu-icon:hover { background: rgba(60,64,67,0.08); }
+        .gmail-logo { height: 40px; margin-left: 5px; }
+
+        .header-middle {
+            flex: 1;
+            max-width: 720px;
+            background: #eaf1fb;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            height: 48px;
+            border-radius: 24px;
+            transition: 0.2s;
+        }
+        .header-middle:focus-within { background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .search-input { border: none; background: transparent; flex: 1; margin-left: 10px; font-size: 16px; outline: none; }
+
+        .header-right { display: flex; align-items: center; gap: 10px; padding-right: 15px; }
+        .user-avatar {
+            width: 32px; height: 32px; background: #8e24aa; color: white;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px;
+        }
+
+        /* Body Layout */
+        .gmail-body { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-width); padding-right: 10px; display: flex; flex-direction: column; }
+        
+        .compose-btn {
+            display: flex; align-items: center; gap: 15px;
+            background: #c2e7ff; color: #001d35;
+            width: fit-content; padding: 16px 24px 16px 16px;
+            border-radius: 16px; margin: 8px 0 16px 10px;
+            cursor: pointer; font-weight: 500; font-size: 14px;
+            transition: box-shadow 0.2s;
+        }
+        .compose-btn:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        .nav-item {
+            display: flex; align-items: center; padding: 0 26px;
+            height: 32px; border-radius: 0 16px 16px 0;
+            color: #202124; cursor: pointer; font-size: 14px;
+            margin-right: 10px;
+        }
+        .nav-item span { margin-right: 18px; font-size: 20px; color: #444746; }
+        .nav-item.active { background: #d3e3fd; font-weight: bold; }
+        .nav-item:hover:not(.active) { background: #f2f2f2; }
+        .badge { margin-left: auto; font-size: 12px; font-weight: bold; }
+
+        /* Email List */
+        .email-list-container {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            margin: 0 16px 16px 0;
+            overflow-y: auto;
+            box-shadow: 0 0 5px rgba(0,0,0,0.05);
+        }
+
+        .toolbar {
+            height: 48px; border-bottom: 1px solid #f2f2f2; display: flex; align-items: center; padding: 0 16px; color: #444746;
+        }
+
+        .email-row {
+            display: flex; align-items: center; padding: 10px 16px;
+            border-bottom: 1px solid #f2f2f2; cursor: pointer;
+            font-size: 14px; color: #202124; position: relative;
+        }
+        .email-row:hover { box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 1px 2px 0 rgba(60,64,67,.3); z-index: 1; }
+        .email-row.unread { background: #fff; font-weight: 700; color: #000; }
+        .email-row.read { background: rgba(242,245,245, 0.4); font-weight: 400; }
+
+        .row-options { display: flex; gap: 15px; margin-right: 15px; color: #c4c7c5; }
+        .row-options .material-icons { font-size: 20px; }
+        .row-options .material-icons:hover { color: #444746; }
+        
+        .sender { width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .subject { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #5f6368; }
+        .subject span { color: #202124; }
+        .timestamp { width: 80px; text-align: right; font-size: 12px; font-weight: 500; }
+
+        /* Delete Action */
+        .delete-btn { position: absolute; right: 20px; color: #5f6368; display: none; }
+        .email-row:hover .timestamp { display: none; }
+        .email-row:hover .delete-btn { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="signin-section">
+        <div class="login-card">
+            <img class="google-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google">
+            <div class="login-header">
+                <h2>Sign in</h2>
+                <p>to continue to Gmail</p>
+            </div>
+
+            <div class="input-wrapper">
+                <input type="email" id="userEmail" class="login-input" placeholder="Email or phone">
+            </div>
+            
+            <a href="#" class="forgot-link">Forgot email?</a>
+
+            <div class="action-buttons">
+                <span class="create-account">Create account</span>
+                <button class="btn-next" onclick="attemptLogin()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gmail-interface">
+        <header>
+            <div class="header-left">
+                <span class="material-icons menu-icon">menu</span>
+                <img class="gmail-logo" src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x_r5.png" alt="Gmail">
+            </div>
+            <div class="header-middle">
+                <span class="material-icons" style="color:#5f6368">search</span>
+                <input type="text" class="search-input" placeholder="Search mail">
+                <span class="material-icons" style="color:#5f6368">tune</span>
+            </div>
+            <div class="header-right">
+                <span class="material-icons menu-icon">help_outline</span>
+                <span class="material-icons menu-icon">settings</span>
+                <span class="material-icons menu-icon">apps</span>
+                <div class="user-avatar" id="avatarDisplay">U</div>
+            </div>
+        </header>
+
+        <div class="gmail-body">
+            <aside class="sidebar">
+                <div class="compose-btn">
+                    <span class="material-icons">edit</span>
+                    Compose
+                </div>
+                <div class="nav-item active">
+                    <span class="material-icons">inbox</span> Inbox <span class="badge">3</span>
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">star_border</span> Starred
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">access_time</span> Snoozed
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">send</span> Sent
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">drafts</span> Drafts
+                </div>
+            </aside>
+
+            <div class="email-list-container">
+                <div class="toolbar">
+                    <span class="material-icons" style="margin-right: 20px;">check_box_outline_blank</span>
+                    <span class="material-icons">refresh</span>
+                    <span class="material-icons" style="margin-left: 20px;">more_vert</span>
+                </div>
+
+                <div id="emailContainer">
+                    <div class="email-row unread" onclick="readEmail(this)">
+                        <div class="row-options">
+                            <span class="material-icons">check_box_outline_blank</span>
+                            <span class="material-icons" onclick="toggleStar(this, event)">star_border</span>
+                        </div>
+                        <div class="sender">Google Community</div>
+                        <div class="subject"><span>Welcome to your new inbox</span> - Tips to get started with Gmail...</div>
+                        <div class="timestamp">10:30 AM</div>
+                        <span class="material-icons delete-btn" onclick="deleteEmail(this, event)">delete</span>
+                    </div>
+
+                    <div class="email-row unread" onclick="readEmail(this)">
+                        <div class="row-options">
+                            <span class="material-icons">check_box_outline_blank</span>
+                            <span class="material-icons" onclick="toggleStar(this, event)">star_border</span>
+                        </div>
+                        <div class="sender">Lisa from Work</div>
+                        <div class="subject"><span>Project Update</span> - The dashboard designs are ready for review.</div>
+                        <div class="timestamp">9:15 AM</div>
+                        <span class="material-icons delete-btn" onclick="deleteEmail(this, event)">delete</span>
+                    </div>
+
+                    <div class="email-row read" onclick="readEmail(this)">
+                        <div class="row-options">
+                            <span class="material-icons">check_box_outline_blank</span>
+                            <span class="material-icons" onclick="toggleStar(this, event)">star_border</span>
+                        </div>
+                        <div class="sender">Netflix</div>
+                        <div class="subject"><span>New Arrival: Stranger Things</span> - Season 5 is finally here. Watch now!</div>
+                        <div class="timestamp">Jan 14</div>
+                        <span class="material-icons delete-btn" onclick="deleteEmail(this, event)">delete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIN LOGIC ---
+        function attemptLogin() {
+            const emailInput = document.getElementById('userEmail');
+            const btn = document.querySelector('.btn-next');
+            const signinSection = document.getElementById('signin-section');
+            const gmailInterface = document.getElementById('gmail-interface');
+            const avatarDisplay = document.getElementById('avatarDisplay');
+
+            if(emailInput.value.trim() === "") {
+                alert("Please enter an email address.");
+                emailInput.focus();
+                return;
+            }
+
+            // Simulate Loading
+            const originalText = btn.innerText;
+            btn.innerText = "Signing in...";
+            btn.style.opacity = "0.7";
+
+            setTimeout(() => {
+                // Update Avatar letter based on email
+                const letter = emailInput.value.charAt(0).toUpperCase();
+                avatarDisplay.innerText = letter;
+
+                // Switch Views
+                signinSection.style.display = 'none';
+                gmailInterface.style.display = 'flex';
+            }, 1500); // 1.5 seconds delay
+        }
+
+        // Allow "Enter" key to submit login
+        document.getElementById('userEmail').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') attemptLogin();
+        });
+
+
+        // --- GMAIL INTERFACE LOGIC ---
+
+        // 1. Delete Email
+        function deleteEmail(element, event) {
+            event.stopPropagation(); // Stop click from opening email
+            const row = element.closest('.email-row');
+            row.style.opacity = '0'; // Fade out
+            setTimeout(() => row.remove(), 300); // Remove from DOM
+        }
+
+        // 2. Toggle Star (Yellow/Empty)
+        function toggleStar(element, event) {
+            event.stopPropagation();
+            if (element.innerText === 'star_border') {
+                element.innerText = 'star';
+                element.style.color = '#f4b400';
+            } else {
+                element.innerText = 'star_border';
+                element.style.color = '#c4c7c5';
+            }
+        }
+
+        // 3. Mark as Read (Simple visual toggle)
+        function readEmail(element) {
+            element.classList.remove('unread');
+            element.classList.add('read');
+            element.style.backgroundColor = 'rgba(242,245,245, 0.4)';
+        }
+    </script>
+</body>
+</html>
